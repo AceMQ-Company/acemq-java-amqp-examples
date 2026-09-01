@@ -1,6 +1,6 @@
 # RabbitMQ with TLS, for this example.
 #
-#   ./generate-dev-certs.sh      # once — writes ./certs
+#   mvn -Pgencert        # once — writes ./certs and ./certs/rabbitmq.conf
 #   docker compose up -d
 #   mvn compile exec:java
 #
@@ -13,8 +13,7 @@ services:
       - "5671:5671"      # TLS — what the example connects to
       - "15672:15672"
     volumes:
-      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      # The private key is 0600 on the host and has to be readable by the broker's
-      # own user inside the container, which is why this mount is not the key file
-      # alone. Throwaway development certificates; do not copy this arrangement.
+      # Both written by `mvn -Pgencert`. The generator emits the configuration as
+      # well as the certificates, so the two cannot drift apart.
+      - ./certs/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./certs:/etc/rabbitmq/certs:ro

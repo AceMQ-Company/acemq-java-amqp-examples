@@ -32,6 +32,38 @@
     </dependency>
   </dependencies>
 
+  <profiles>
+    <!-- ./mvnw -Pgencert     (or: mvn -Pgencert)
+         Writes ./certs and the rabbitmq.conf the compose file mounts. A profile
+         rather than a bare command line so the arguments live in the repository
+         and a reader has one thing to type. -->
+    <profile>
+      <id>gencert</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.acemq</groupId>
+            <artifactId>acemq-security-dev</artifactId>
+            <version>${acemq.version}</version>
+            <executions>
+              <execution>
+                <id>certs</id>
+                <phase>generate-resources</phase>
+                <goals><goal>certs</goal></goals>
+              </execution>
+            </executions>
+            <configuration>
+              <out>${project.basedir}/certs</out>
+              <broker>localhost</broker>
+              <password>acemq-dev</password>
+              <days>30</days>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
       <plugin>

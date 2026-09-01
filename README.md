@@ -16,6 +16,15 @@ docker compose up -d
 mvn compile exec:java
 ```
 
+The TLS example needs certificates first, which is one command:
+
+```bash
+cd basic/02-tls-and-credentials
+mvn -Pgencert          # writes ./certs and the rabbitmq.conf compose mounts
+docker compose up -d
+mvn compile exec:java
+```
+
 Java 17 or later, and Docker.
 
 ## What is here

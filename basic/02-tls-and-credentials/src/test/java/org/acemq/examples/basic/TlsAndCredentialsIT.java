@@ -45,15 +45,26 @@ class TlsAndCredentialsIT {
         }
     }
 
-    /** Runs the reader's script, rather than a test fixture standing in for it. */
+    /**
+     * Runs the same Maven goal a reader runs, rather than a fixture standing in for it.
+     *
+     * <p>{@code mvn -Pgencert} is what the README says to type; this invokes the goal it is
+     * bound to, so a change that breaks the documented command breaks this test too.
+     */
     private static void generateCertificates() throws Exception {
-        Process process = new ProcessBuilder("./generate-dev-certs.sh", CERTS.toString())
+        String mvn = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win")
+                ? "mvn.cmd" : "mvn";
+        Process process = new ProcessBuilder(mvn, "-B",
+                "org.acemq:acemq-security-dev:0.2.0:certs",
+                "-Dbroker=localhost",
+                "-Dpassword=acemq-dev",
+                "-Dout=" + CERTS.toAbsolutePath())
                 .redirectErrorStream(true)
                 .start();
         String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         boolean finished = process.waitFor(120, TimeUnit.SECONDS);
-        assertThat(finished).as("generate-dev-certs.sh should finish").isTrue();
-        assertThat(process.exitValue()).as("generate-dev-certs.sh said:%n%s", output).isZero();
+        assertThat(finished).as("the certs goal should finish").isTrue();
+        assertThat(process.exitValue()).as("the certs goal said:%n%s", output).isZero();
         assertThat(Files.exists(CERTS.resolve("truststore.p12"))).isTrue();
         assertThat(Files.exists(CERTS.resolve("server.crt"))).isTrue();
     }
@@ -65,7 +76,9 @@ class TlsAndCredentialsIT {
             // what a reader actually runs. Testcontainers' withSSL() helper is not used:
             // it sets RABBITMQ_SSL_* environment variables that RabbitMQ 4 rejects
             // outright as deprecated, and the broker refuses to boot.
-            .withRabbitMQConfig(MountableFile.forHostPath(Path.of("rabbitmq.conf")))
+            // The rabbitmq.conf the generator emitted, so the test runs exactly what a
+            // reader gets rather than a hand-written copy that can drift from it.
+            .withRabbitMQConfig(MountableFile.forHostPath(CERTS.resolve("rabbitmq.conf")))
             .withCopyFileToContainer(
                     // An explicit mode: the script writes private keys 0600, which is
                     // right on a developer's machine and unreadable to the broker's user

@@ -31,6 +31,7 @@
     <module>intermediate/03-telemetry</module>
     <module>intermediate/04-testing-without-a-broker</module>
     <module>intermediate/05-blocked-connections</module>
+    <module>intermediate/06-topology-as-data</module>
   </modules>
 
   <properties>

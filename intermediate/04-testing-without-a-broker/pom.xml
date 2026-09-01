@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>acemq-java-amqp-examples</artifactId>
+    <version>0.1.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>04-testing-without-a-broker</artifactId>
+  <name>intermediate/04 — testing without a broker</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.acemq</groupId>
+      <artifactId>acemq-amqp-core</artifactId>
+    </dependency>
+    <!-- The whole point of this example. Compile scope rather than test scope
+         only because the runnable main uses it too; in an application this is
+         <scope>test</scope> and never ships. -->
+    <dependency>
+      <groupId>org.acemq</groupId>
+      <artifactId>acemq-amqp-test</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>org.acemq.examples.intermediate.TestingWithoutABroker</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -36,3 +36,24 @@ jobs:
           name: failsafe-reports
           path: '**/target/failsafe-reports/**'
           retention-days: 7
+
+  # Failures only. A green run here is the normal state and would be noise, but a
+  # red one on the weekly schedule means a released version broke something the
+  # documentation still tells people to do — which nobody would otherwise notice
+  # until a newcomer hit it.
+  notify:
+    needs: examples
+    if: always() && needs.examples.result == 'failure'
+    uses: AceMQ-Company/acemq-java-amqp/.github/workflows/slack-notify.yml@main
+    with:
+      status: failure
+      title: >-
+        ${{ github.event_name == 'schedule'
+            && 'AceMQ examples broke against the published release'
+            || 'AceMQ examples are failing' }}
+      message: >-
+        ${{ github.event_name == 'schedule'
+            && 'Nothing changed here, so a released artifact or the documentation it matches has moved underneath them.'
+            || 'An example no longer runs. The examples are what a newcomer meets first.' }}
+      url: https://github.com/AceMQ-Company/acemq-java-amqp-examples/actions
+    secrets: inherit

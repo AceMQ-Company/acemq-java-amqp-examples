@@ -40,6 +40,8 @@
     <module>advanced/02-encrypting-payloads</module>
     <module>advanced/03-dead-letter-triage</module>
     <module>advanced/04-portability-and-capabilities</module>
+    <module>advanced/05-message-expiry</module>
+    <module>advanced/06-multi-tenant-topology</module>
   </modules>
 
   <properties>

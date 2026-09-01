@@ -67,9 +67,10 @@ Java 17 or later, and Docker.
 | [02 — encrypting payloads](advanced/02-encrypting-payloads) | A custom `Codec` that makes the payload opaque to the broker, and why the content type must describe the wire format rather than what is under it. |
 | [03 — dead-letter triage](advanced/03-dead-letter-triage) | A dead-letter queue with more than one thing wrong in it: selective replay, why the filter is a drain and not a query, and what the parking lot is for. |
 | [04 — portability and capabilities](advanced/04-portability-and-capabilities) | The same code on two transports, branching on what each says it can do — 4 of 13 capabilities against 11 of 13. |
+| [05 — message expiry](advanced/05-message-expiry) | A time to live on the message, where expired ones go — and the fact that they leave at the head of the queue, not on a timer. |
+| [06 — multi-tenant topology](advanced/06-multi-tenant-topology) | A queue per customer: blast radius, and why the tenant belongs in the name rather than the payload. |
 
-More to come: the rest of the `advanced/` tier and a full application under
-`apps/`.
+More to come: a full application under `apps/`.
 
 ## Every example is tested
 

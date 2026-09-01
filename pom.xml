@@ -26,6 +26,7 @@
     <module>basic/08-ordered-per-key</module>
     <module>basic/09-streams</module>
     <module>basic/10-pipelines</module>
+    <module>intermediate/01-consumer-groups</module>
   </modules>
 
   <properties>

@@ -44,8 +44,15 @@ Java 17 or later, and Docker.
 | [09 — streams](basic/09-streams) | A log that is read rather than emptied: checkpointing, resuming from an offset, and a second reader that still sees everything. |
 | [10 — pipelines](basic/10-pipelines) | Three steps with a queue between each, retries and concurrency set per step, and a filtering step that ends the route without failing. |
 
-More to come: serialization formats, streams, pipelines, ordered consumption,
-and a full application under `apps/`.
+### intermediate
+
+| | |
+|---|---|
+| [01 — consumer groups](intermediate/01-consumer-groups) | Scaling a running group from one consumer to eight, what prefetch does to fairness, and draining before shutdown so nothing in flight is redelivered. |
+
+More to come: interceptors, telemetry, testing without a broker, blocked
+connections, topology as data, schema evolution, and a full application under
+`apps/`.
 
 ## Every example is tested
 

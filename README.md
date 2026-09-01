@@ -52,8 +52,9 @@ Java 17 or later, and Docker.
 | [02 — interceptors](intermediate/02-interceptors) | Cross-cutting concerns registered once on the connection: a tenant header no call site mentions, and the failure hook that replaces try/catch in every handler. |
 | [03 — telemetry and tracing](intermediate/03-telemetry) | One trace across two broker hops, with a 70-line tracer you can read. Four operations, one trace id, exactly one root. |
 | [04 — testing without a broker](intermediate/04-testing-without-a-broker) | `memory://` and a unit test that runs in 0.29s. What the in-memory transport refuses to fake, and why that is the point. |
+| [05 — blocked connections](intermediate/05-blocked-connections) | The broker runs out of disk and stops accepting publishes. What the exception tells you, why an idle connection never finds out, and the 30-second default that decides whether an alarm degrades a service or stops it. |
 
-More to come: blocked
+More to come: 
 connections, topology as data, schema evolution, and a full application under
 `apps/`.
 

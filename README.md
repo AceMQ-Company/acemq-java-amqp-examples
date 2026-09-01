@@ -38,9 +38,10 @@ Java 17 or later, and Docker.
 | [03 — retries and dead letters](basic/03-retries-and-dead-letters) | A failure that recovers, one that never does, and one that was never going to. Retries scheduled by the broker rather than by a sleeping thread. |
 | [04 — replay](basic/04-replay) | Getting dead-lettered messages back once the cause is fixed: a bounded trial first, then the rest, with provenance on every one. |
 | [05 — idempotent consumer](basic/05-idempotent-consumer) | The same message delivered twice, charged once. Shown against the same run without a store, so the duplicate is real. |
+| [06 — transactional outbox](basic/06-transactional-outbox) | The dual-write problem: an order and its event in one transaction, and a rollback that takes the event with it. |
 
-More to come: the transactional outbox, serialization formats, streams,
-pipelines, and a full application under `apps/`.
+More to come: serialization formats, streams, pipelines, ordered consumption,
+and a full application under `apps/`.
 
 ## Every example is tested
 

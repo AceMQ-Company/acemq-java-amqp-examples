@@ -39,6 +39,10 @@ Java 17 or later, and Docker.
 | [04 — replay](basic/04-replay) | Getting dead-lettered messages back once the cause is fixed: a bounded trial first, then the rest, with provenance on every one. |
 | [05 — idempotent consumer](basic/05-idempotent-consumer) | The same message delivered twice, charged once. Shown against the same run without a store, so the duplicate is real. |
 | [06 — transactional outbox](basic/06-transactional-outbox) | The dual-write problem: an order and its event in one transaction, and a rollback that takes the event with it. |
+| [07 — serialization formats](basic/07-serialization) | JSON, XML and YAML on one queue, read by a consumer that was never told which to expect. What makes a format migration two ordinary releases. |
+| [08 — ordered per key](basic/08-ordered-per-key) | Order within an account, parallelism across accounts. Partitions, and the concurrency limit they impose. |
+| [09 — streams](basic/09-streams) | A log that is read rather than emptied: checkpointing, resuming from an offset, and a second reader that still sees everything. |
+| [10 — pipelines](basic/10-pipelines) | Three steps with a queue between each, retries and concurrency set per step, and a filtering step that ends the route without failing. |
 
 More to come: serialization formats, streams, pipelines, ordered consumption,
 and a full application under `apps/`.

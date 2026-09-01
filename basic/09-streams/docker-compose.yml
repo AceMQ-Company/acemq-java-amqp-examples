@@ -1,0 +1,14 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Stream queues are part of RabbitMQ itself from 3.9 onwards, so nothing extra
+# is enabled here. (The `rabbitmq_stream` plugin is for the dedicated stream
+# protocol on port 5552, which this library does not use.)
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

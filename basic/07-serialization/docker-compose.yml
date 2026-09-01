@@ -1,0 +1,13 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Watch http://localhost:15672 (guest/guest) while it runs: the retry queues and
+# the dead-letter queue appear as the example creates them.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

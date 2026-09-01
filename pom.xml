@@ -22,6 +22,10 @@
     <module>basic/04-replay</module>
     <module>basic/05-idempotent-consumer</module>
     <module>basic/06-transactional-outbox</module>
+    <module>basic/07-serialization</module>
+    <module>basic/08-ordered-per-key</module>
+    <module>basic/09-streams</module>
+    <module>basic/10-pipelines</module>
   </modules>
 
   <properties>
@@ -31,7 +35,7 @@
     <!-- The released version, never a snapshot. These examples are what a
          newcomer runs first, so they resolve exactly what the documentation
          tells them to depend on. -->
-    <acemq.version>0.2.2</acemq.version>
+    <acemq.version>0.2.3</acemq.version>
 
     <slf4j.version>2.0.16</slf4j.version>
     <junit.version>5.11.4</junit.version>

@@ -36,6 +36,8 @@
     <module>intermediate/08-schema-evolution</module>
     <module>intermediate/09-shared-idempotency</module>
     <module>intermediate/10-graceful-shutdown</module>
+    <module>advanced/01-backpressure-and-async</module>
+    <module>advanced/02-encrypting-payloads</module>
   </modules>
 
   <properties>

@@ -59,7 +59,15 @@ Java 17 or later, and Docker.
 | [09 — shared idempotency](intermediate/09-shared-idempotency) | Handling once across a fleet rather than once per process, and why the claim is a lease that expires rather than a lock that does not. |
 | [10 — graceful shutdown](intermediate/10-graceful-shutdown) | `close()` does not wait and `drain(timeout)` does — and the return value that tells you the grace period is too short. |
 
-More to come: the `advanced/` tier and a full application under `apps/`.
+### advanced
+
+| | |
+|---|---|
+| [01 — backpressure and async publishing](advanced/01-backpressure-and-async) | A thousand messages three ways: 547ms, 26ms, 17ms — all confirmed. And the window that stops pipelining becoming a memory leak. |
+| [02 — encrypting payloads](advanced/02-encrypting-payloads) | A custom `Codec` that makes the payload opaque to the broker, and why the content type must describe the wire format rather than what is under it. |
+
+More to come: the rest of the `advanced/` tier and a full application under
+`apps/`.
 
 ## Every example is tested
 

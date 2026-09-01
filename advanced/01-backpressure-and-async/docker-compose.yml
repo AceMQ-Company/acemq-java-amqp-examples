@@ -1,0 +1,13 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Watch http://localhost:15672 (guest/guest) while it runs: one queue per
+# partition appears, and messages for one account only ever land in one of them.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

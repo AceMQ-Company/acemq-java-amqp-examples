@@ -32,6 +32,7 @@
     <module>intermediate/04-testing-without-a-broker</module>
     <module>intermediate/05-blocked-connections</module>
     <module>intermediate/06-topology-as-data</module>
+    <module>intermediate/07-avro-and-the-registry</module>
   </modules>
 
   <properties>

@@ -31,7 +31,9 @@ import org.testcontainers.utility.MountableFile;
 @DisplayName("basic/02 — TLS and credentials")
 class TlsAndCredentialsIT {
 
-    private static final Path CERTS = Path.of("target", "it-certs");
+    // ./certs, because that is where `mvn -Pgencert` writes and this test runs the
+    // reader's command rather than a variant of it.
+    private static final Path CERTS = Path.of("certs");
 
     // A static block rather than @BeforeAll, and the ordering is the whole reason:
     // a static @Container field is initialised — and the files it mounts are read —
@@ -54,10 +56,12 @@ class TlsAndCredentialsIT {
     private static void generateCertificates() throws Exception {
         String mvn = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win")
                 ? "mvn.cmd" : "mvn";
-        Process process = new ProcessBuilder(mvn, "-B",
-                "org.acemq:acemq-security-dev:0.2.1:certs",
-                "-Dbroker=localhost",
-                "-Dout=" + CERTS.toAbsolutePath())
+        // Through the module's own POM, not as a bare coordinate. A bare
+        // `mvn org.acemq:...:certs` runs with no project, so Maven knows only Maven
+        // Central and cannot find a plugin published anywhere else -- which passes on a
+        // machine whose ~/.m2 already has it and fails everywhere else. This runs the
+        // command the README documents, and the repository declaration comes with it.
+        Process process = new ProcessBuilder(mvn, "-B", "-Pgencert", "generate-resources")
                 .redirectErrorStream(true)
                 .start();
         String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

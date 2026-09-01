@@ -46,6 +46,19 @@
     </repository>
   </repositories>
 
+  <!-- Separate from <repositories>, and easy to miss: that element tells Maven
+       where dependencies come from, and plugins are resolved from here instead.
+       Without it, acemq-security-dev is looked for in Maven Central alone and
+       `mvn -Pgencert` fails on any machine whose local repository does not
+       already happen to hold it. -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>acemq</id>
+      <name>AceMQ</name>
+      <url>https://acemq-company.github.io/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

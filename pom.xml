@@ -19,6 +19,7 @@
     <module>basic/01-publish-and-confirm</module>
     <module>basic/02-tls-and-credentials</module>
     <module>basic/03-retries-and-dead-letters</module>
+    <module>basic/04-replay</module>
   </modules>
 
   <properties>

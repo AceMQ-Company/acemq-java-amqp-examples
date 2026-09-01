@@ -36,9 +36,10 @@ Java 17 or later, and Docker.
 | [01 — publish and confirm](basic/01-publish-and-confirm) | The smallest useful thing: publish, have the broker confirm it, consume it. Also shows an unroutable message being refused rather than silently dropped. |
 | [02 — TLS and credentials](basic/02-tls-and-credentials) | Connecting over `amqps://` with generated development certificates, credentials that can rotate, and the two refusals the security policy makes on your behalf. |
 | [03 — retries and dead letters](basic/03-retries-and-dead-letters) | A failure that recovers, one that never does, and one that was never going to. Retries scheduled by the broker rather than by a sleeping thread. |
+| [04 — replay](basic/04-replay) | Getting dead-lettered messages back once the cause is fixed: a bounded trial first, then the rest, with provenance on every one. |
 
-More to come: replay, idempotency, the transactional outbox, streams, pipelines,
-and a full application under `apps/`.
+More to come: idempotency, the transactional outbox, serialization formats,
+streams, pipelines, and a full application under `apps/`.
 
 ## Every example is tested
 

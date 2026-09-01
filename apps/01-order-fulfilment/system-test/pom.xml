@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>01-order-fulfilment</artifactId>
+    <version>0.1.0</version>
+  </parent>
+
+  <artifactId>fulfilment-system-test</artifactId>
+  <name>fulfilment: system test</name>
+
+  <!-- The only module that knows about all five services, and it is a test. In
+       production these run as five deployments; here they are started in one JVM
+       against one real broker, which exercises every hop and every queue for the
+       cost of a single container. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>fulfilment-gateway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>fulfilment-payments</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>fulfilment-inventory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>fulfilment-shipping</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>fulfilment-notifications</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq</groupId>
+      <artifactId>acemq-transport-rabbitmq</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+  </dependencies>
+</project>

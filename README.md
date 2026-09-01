@@ -70,7 +70,13 @@ Java 17 or later, and Docker.
 | [05 — message expiry](advanced/05-message-expiry) | A time to live on the message, where expired ones go — and the fact that they leave at the head of the queue, not on a timer. |
 | [06 — multi-tenant topology](advanced/06-multi-tenant-topology) | A queue per customer: blast radius, and why the tenant belongs in the name rather than the payload. |
 
-More to come: a full application under `apps/`.
+### apps
+
+| | |
+|---|---|
+| [01 — order fulfilment](apps/01-order-fulfilment) | **Microservices.** Five services, one broker, no shared database: outbox at the edge, idempotent payments, a retry ladder over a flaky warehouse, and one correlation id that assembles the customer's timeline. |
+
+More to come: a modular monolith, and an event-sourced ledger.
 
 ## Every example is tested
 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>acemq-java-amqp-examples</artifactId>
+    <version>0.1.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>01-order-fulfilment</artifactId>
+  <packaging>pom</packaging>
+  <name>apps/01 — order fulfilment (microservices)</name>
+
+  <!-- One module per service, because services that share code are not services.
+       The only thing they have in common is `contracts`, which holds the events
+       and the names of the queues those events travel through: the same thing
+       a schema registry would hold in a larger estate. -->
+  <modules>
+    <module>contracts</module>
+    <module>gateway</module>
+    <module>payments</module>
+    <module>inventory</module>
+    <module>shipping</module>
+    <module>notifications</module>
+    <module>system-test</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-contracts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-gateway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-payments</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-inventory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-shipping</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>fulfilment-notifications</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

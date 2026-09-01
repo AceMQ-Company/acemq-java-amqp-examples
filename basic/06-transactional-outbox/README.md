@@ -25,16 +25,24 @@ flowchart LR
     R --> Q[["orders.new"]]
 ```
 
-## Why the consumer reads text
+## The consumer is an ordinary typed one
+
+```java
+mq.consume("orders.new", OrderPlaced.class, message -> ...)
+```
 
 An outbox stores a payload that is **already serialised** — that is what made it
-safe to write inside the transaction — and the relay republishes those bytes
-unchanged. The consumer therefore receives exactly the string that was stored and
-parses it with whatever the application already uses.
+safe to write inside the transaction — and the relay puts those bytes on the wire
+unchanged. So what arrives is the JSON that was committed, and it is read like
+any other message.
 
-That is worth knowing before you design around it: `mq.consume(queue,
-OrderPlaced.class, ...)` will not decode an outbox message, because the relay
-publishes the stored text rather than re-serialising an object it never had.
+That was not always true, and the history is worth knowing if you are on an older
+version. The relay used to republish the stored payload *through the ordinary
+codec*, encoding it a second time: what arrived was a JSON string containing
+JSON, `OrderPlaced.class` failed with "no String-argument constructor", and the
+only thing that could read the queue was a consumer taking `String` and parsing
+it by hand. It was found by building the order fulfilment app, where five
+services would all have had to do that.
 
 ## Running it
 
@@ -51,7 +59,7 @@ H2 runs in memory inside the process; only RabbitMQ needs the container.
   committed  order o-1 and its event, in one transaction
   rolled back order o-2 — neither the row nor the event survived
   in the db  orders=1, outbox rows pending=1
-  published  [o-1 {"id":"o-1","total":42.0}]
+  published  [o-1 o-1 42.0]
   outbox now pending=0
 ```
 

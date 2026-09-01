@@ -38,7 +38,7 @@ class TransactionalOutboxIT {
         // The body arrives exactly as it was stored, which is what makes the
         // transactional write safe: the outbox holds the wire form, not an object
         // that has to be re-serialised later by a process that may not exist.
-        assertThat(output).contains("published  [o-1 {\"id\":\"o-1\",\"total\":42.0}]");
+        assertThat(output).contains("published  [o-1 o-1 42.0]");
         // Specifically that no o-2 payload was published. "o-2 " alone matches the
         // rolled-back line in the output, which is not the same claim at all.
         assertThat(output).doesNotContain("o-2 {");

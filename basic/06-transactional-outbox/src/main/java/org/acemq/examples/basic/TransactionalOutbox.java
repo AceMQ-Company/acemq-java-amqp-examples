@@ -74,13 +74,19 @@ public final class TransactionalOutbox {
             // Nothing has been published yet. The relay is what turns rows into
             // messages, and it runs separately — often in a different process.
             List<String> received = new CopyOnWriteArrayList<>();
-            // Read as text, not as OrderPlaced. An outbox stores a payload that is
-            // already serialised — that is what made it safe to write in the
-            // transaction — and the relay republishes those bytes as they were. The
-            // consumer therefore receives exactly the string that was stored, and
-            // parses it with whatever the application already uses.
-            try (MessageConsumer consumer = mq.consume("orders.new", String.class,
-                    message -> received.add(message.envelope().id() + " " + message.payload()))) {
+            // An ordinary typed consumer. An outbox stores a payload that is already
+            // serialised — that is what made it safe to write inside the transaction —
+            // and the relay puts those bytes on the wire unchanged, so what arrives is
+            // the JSON that was committed and it reads like any other message.
+            //
+            // That was not always true. The relay used to republish the payload through
+            // the ordinary codec, encoding it a second time: a JSON string containing
+            // JSON arrived, asking for OrderPlaced failed with "no String-argument
+            // constructor", and the only thing able to read the queue was a consumer
+            // taking String and parsing it by hand.
+            try (MessageConsumer consumer = mq.consume("orders.new", OrderPlaced.class,
+                    message -> received.add(message.envelope().id() + " " + message.payload().id()
+                            + " " + message.payload().total()))) {
 
                 JdbcOutboxStore relayStore = new JdbcOutboxStore(database::getConnection, database);
                 try (OutboxRelay relay = new OutboxRelay(mq, relayStore, 10,

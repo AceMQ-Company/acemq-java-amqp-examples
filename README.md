@@ -50,8 +50,9 @@ Java 17 or later, and Docker.
 |---|---|
 | [01 — consumer groups](intermediate/01-consumer-groups) | Scaling a running group from one consumer to eight, what prefetch does to fairness, and draining before shutdown so nothing in flight is redelivered. |
 | [02 — interceptors](intermediate/02-interceptors) | Cross-cutting concerns registered once on the connection: a tenant header no call site mentions, and the failure hook that replaces try/catch in every handler. |
+| [03 — telemetry and tracing](intermediate/03-telemetry) | One trace across two broker hops, with a 70-line tracer you can read. Four operations, one trace id, exactly one root. |
 
-More to come: telemetry, testing without a broker, blocked
+More to come: testing without a broker, blocked
 connections, topology as data, schema evolution, and a full application under
 `apps/`.
 

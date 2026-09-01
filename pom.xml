@@ -28,6 +28,7 @@
     <module>basic/10-pipelines</module>
     <module>intermediate/01-consumer-groups</module>
     <module>intermediate/02-interceptors</module>
+    <module>intermediate/03-telemetry</module>
   </modules>
 
   <properties>

@@ -27,6 +27,7 @@
     <module>basic/09-streams</module>
     <module>basic/10-pipelines</module>
     <module>intermediate/01-consumer-groups</module>
+    <module>intermediate/02-interceptors</module>
   </modules>
 
   <properties>

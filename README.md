@@ -49,8 +49,9 @@ Java 17 or later, and Docker.
 | | |
 |---|---|
 | [01 — consumer groups](intermediate/01-consumer-groups) | Scaling a running group from one consumer to eight, what prefetch does to fairness, and draining before shutdown so nothing in flight is redelivered. |
+| [02 — interceptors](intermediate/02-interceptors) | Cross-cutting concerns registered once on the connection: a tenant header no call site mentions, and the failure hook that replaces try/catch in every handler. |
 
-More to come: interceptors, telemetry, testing without a broker, blocked
+More to come: telemetry, testing without a broker, blocked
 connections, topology as data, schema evolution, and a full application under
 `apps/`.
 

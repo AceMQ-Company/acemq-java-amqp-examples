@@ -55,9 +55,8 @@ class TlsAndCredentialsIT {
         String mvn = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win")
                 ? "mvn.cmd" : "mvn";
         Process process = new ProcessBuilder(mvn, "-B",
-                "org.acemq:acemq-security-dev:0.2.0:certs",
+                "org.acemq:acemq-security-dev:0.2.1:certs",
                 "-Dbroker=localhost",
-                "-Dpassword=acemq-dev",
                 "-Dout=" + CERTS.toAbsolutePath())
                 .redirectErrorStream(true)
                 .start();

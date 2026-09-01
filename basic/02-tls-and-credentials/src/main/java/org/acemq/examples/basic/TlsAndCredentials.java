@@ -30,11 +30,9 @@ public final class TlsAndCredentials {
         // The URL decides whether the connection is encrypted; the policy decides how
         // strictly the certificate is checked. Those are separate on purpose -- an
         // amqp:// URL that quietly upgraded itself would be impossible to reason about.
+        // No keystorePassword call: the generator writes the stores with the same
+        // default fromKeystore assumes. Anything real passes one, from a secret store.
         Security security = Security.fromKeystore(certs)
-                // The built-in default is "acemq", which keytool will not accept when
-                // creating a keystore -- PKCS12 passwords must be at least six
-                // characters. Anything real reads this from a secret store anyway.
-                .keystorePassword("acemq-dev")
                 // Credentials are asked for on every connection, not read once at
                 // start-up. That is what makes rotation work: change the password in
                 // your secret store and the next reconnect picks it up, with no
@@ -79,7 +77,7 @@ public final class TlsAndCredentials {
         // which is the whole point of the marker.
         try {
             AceMq.connect(ConnectionConfig.url(url)
-                    .security(Security.fromKeystore(certs).keystorePassword("acemq-dev"))
+                    .security(Security.fromKeystore(certs))
                     .build()).close();
             System.out.println("  unreachable: a development certificate should be refused");
         } catch (Exception expected) {

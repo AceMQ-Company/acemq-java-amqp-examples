@@ -55,7 +55,6 @@
             <configuration>
               <out>${project.basedir}/certs</out>
               <broker>localhost</broker>
-              <password>acemq-dev</password>
               <days>30</days>
             </configuration>
           </plugin>

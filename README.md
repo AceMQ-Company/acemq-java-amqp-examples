@@ -54,3 +54,8 @@ mvn verify        # runs every example against a throwaway broker
 
 Keep it to one idea, make the output say what happened, and add the test. An
 example that cannot be tested is usually an example doing too much.
+
+Each example carries a `README.md` saying what it is, what it demonstrates, how
+to run it and what to expect. Add a diagram only where the shape of something is
+the hard part — routing, or a trust chain. A diagram of two boxes and an arrow
+costs more to maintain than it explains.

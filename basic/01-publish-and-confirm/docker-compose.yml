@@ -1,0 +1,13 @@
+# A broker to run the example against.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# The management UI is at http://localhost:15672 (guest/guest). Worth having open
+# the first time: every queue and message this example creates shows up there.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -1,0 +1,38 @@
+# Every example is compiled and run against a real broker on every push.
+#
+# This is the whole reason the repository can be trusted. Examples rot: the
+# library moves on, the example does not, and a newcomer's first experience is a
+# build error. Running them here turns that into a red build instead.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # The library can change without this repository changing at all, so the
+  # examples are also run on a schedule. A weekly failure here is how we find out
+  # that a released version broke something the documentation still claims.
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  examples:
+    name: run the examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and run every example
+        run: mvn -B --no-transfer-progress verify
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failsafe-reports
+          path: '**/target/failsafe-reports/**'
+          retention-days: 7

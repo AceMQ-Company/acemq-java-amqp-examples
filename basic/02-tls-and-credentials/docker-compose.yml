@@ -1,0 +1,20 @@
+# RabbitMQ with TLS, for this example.
+#
+#   ./generate-dev-certs.sh      # once — writes ./certs
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# The management UI is at http://localhost:15672 (guest/guest).
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"      # plaintext, for comparison
+      - "5671:5671"      # TLS — what the example connects to
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      # The private key is 0600 on the host and has to be readable by the broker's
+      # own user inside the container, which is why this mount is not the key file
+      # alone. Throwaway development certificates; do not copy this arrangement.
+      - ./certs:/etc/rabbitmq/certs:ro

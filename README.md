@@ -55,6 +55,7 @@ Java 17 or later, and Docker.
 | [05 — blocked connections](intermediate/05-blocked-connections) | The broker runs out of disk and stops accepting publishes. What the exception tells you, why an idle connection never finds out, and the 30-second default that decides whether an alarm degrades a service or stops it. |
 | [06 — topology as data](intermediate/06-topology-as-data) | Exchanges, queues and bindings as one readable value, planned before applied — and why a second plan is never empty. |
 | [07 — Avro and the schema registry](intermediate/07-avro-and-the-registry) | A schema identifier on the front of every message, 17 bytes on the wire, and the two framings that must never be mixed. |
+| [08 — schema evolution](intermediate/08-schema-evolution) | Adding a field without deploying anyone in a particular order — and the default that is the whole reason it works. |
 
 More to come: 
 connections, topology as data, schema evolution, and a full application under

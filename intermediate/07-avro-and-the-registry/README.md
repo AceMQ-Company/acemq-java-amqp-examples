@@ -37,10 +37,11 @@ They are **not interchangeable**, and the difference is invisible in the bytes: 
 fixed-schema codec reading a registered message would take the five framing bytes
 as the start of the first field.
 
-Writing this example is how that was found. On `0.2.3` the mismatch decodes into
-silent nonsense — an empty id and a total of `5.4e-67`, no exception. The library
-now refuses both directions; that fix is in the release after `0.2.3`, which is
-why this example demonstrates the content types rather than the failure.
+Writing this example is how that was found. Before `0.2.4` the mismatch decoded
+into silent nonsense — an empty id and a total of `5.4e-67`, no exception — and
+`canDecode` accepted the other framing's content type, so a consumer would pick
+the wrong codec by itself. Both are refused now, and the example demonstrates
+both refusals rather than describing them.
 
 ## Fixed schema or registry?
 
@@ -67,7 +68,9 @@ mvn compile exec:java      # no broker required
   fingerprint 1a39a1ec78ccebe151264c1c1c7924ee66e562dca24e67ef289dcaefc6e9158d
   received   [o-1=42.0]
   on the wire 17 bytes, id=1, content-type=application/vnd.acemq.avro
-  framings   registered=application/vnd.acemq.avro fixed=avro/binary, never mix them
+  framings   registered=application/vnd.acemq.avro fixed=avro/binary
+  mismatch   refused: these bytes carry a schema identifier and this codec has a fixed schema, so reading them would silently produce the wrong values
+  canDecode  fixed codec on registered messages=false
 ```
 
 ## What a GenericRecord cannot do

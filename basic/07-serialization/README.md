@@ -26,7 +26,7 @@ them and fails at the call if they are missing. JSON needs nothing added.
 <dependency>
   <groupId>org.acemq</groupId>
   <artifactId>acemq-amqp-codec-xml</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <scope>runtime</scope>
 </dependency>
 ```

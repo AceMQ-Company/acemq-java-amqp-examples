@@ -34,6 +34,13 @@ class AvroAndTheRegistryIT {
         assertThat(output).contains("on the wire 17 bytes, id=1, content-type=application/vnd.acemq.avro");
 
         assertThat(output).contains("registered=application/vnd.acemq.avro fixed=avro/binary");
+
+        // The framings are refused in both the places that matter: decoding directly,
+        // and choosing a codec by content type. Before 0.2.4 the first returned an empty
+        // id and a total of 5.4e-67 without throwing, and the second returned true.
+        assertThat(output).contains("mismatch   refused:");
+        assertThat(output).contains("would silently produce the wrong values");
+        assertThat(output).contains("canDecode  fixed codec on registered messages=false");
     }
 
     private static String runMain() throws Exception {

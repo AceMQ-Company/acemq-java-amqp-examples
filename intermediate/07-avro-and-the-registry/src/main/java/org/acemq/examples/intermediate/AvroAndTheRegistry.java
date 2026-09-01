@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.acemq.amqp.api.AceMqException;
 import org.acemq.amqp.api.SchemaDefinition;
 import org.acemq.amqp.codec.avro.AvroCodec;
 import org.acemq.amqp.codec.avro.InMemorySchemaRegistry;
@@ -89,13 +90,31 @@ public final class AvroAndTheRegistry {
         System.out.printf("  on the wire %d bytes, id=%d, content-type=%s%n",
                 encoded.length, idOf(encoded), codec.contentType());
 
-        // Two codecs, two framings, and they are not interchangeable: a fixed-schema
-        // codec reading these bytes would take the five bytes of framing as the start of
-        // the first field. The library refuses that in the release after 0.2.3; on 0.2.3
-        // it decodes them into silent nonsense, which is why this example does not
-        // demonstrate it against the version it depends on.
-        System.out.printf("  framings   registered=%s fixed=%s, never mix them%n",
+        System.out.printf("  framings   registered=%s fixed=%s%n",
                 AvroCodec.registered(registry).contentType(), AvroCodec.of(ORDER).contentType());
+
+        // The two framings are not interchangeable, and the difference is invisible in
+        // the bytes: a fixed-schema codec starts reading at offset zero, so the five
+        // bytes of framing become the beginning of the first field. Avro raises nothing
+        // -- it decodes whatever the shifted bytes happen to mean -- so before 0.2.4
+        // this returned an empty id and a total of 5.4e-67, reported as success. Writing
+        // this example is how that was found.
+        try {
+            AvroCodec.of(ORDER).decode(encoded, GenericRecord.class);
+            System.out.println("  mismatch   unexpectedly decoded");
+        } catch (AceMqException e) {
+            System.out.printf("  mismatch   refused: %s%n", firstSentence(e.getMessage()));
+        }
+
+        // The same refusal on the path a consumer actually takes, where the codec is
+        // chosen by content type before anything is decoded.
+        System.out.printf("  canDecode  fixed codec on registered messages=%s%n",
+                AvroCodec.of(ORDER).canDecode(AvroCodec.registered(registry).contentType()));
+    }
+
+    private static String firstSentence(String message) {
+        int stop = message.indexOf(". ");
+        return stop < 0 ? message : message.substring(0, stop);
     }
 
     private static GenericRecord order(String id, double total) {

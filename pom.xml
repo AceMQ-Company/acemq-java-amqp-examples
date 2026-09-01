@@ -18,6 +18,7 @@
   <modules>
     <module>basic/01-publish-and-confirm</module>
     <module>basic/02-tls-and-credentials</module>
+    <module>basic/03-retries-and-dead-letters</module>
   </modules>
 
   <properties>

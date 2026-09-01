@@ -56,10 +56,10 @@ Java 17 or later, and Docker.
 | [06 — topology as data](intermediate/06-topology-as-data) | Exchanges, queues and bindings as one readable value, planned before applied — and why a second plan is never empty. |
 | [07 — Avro and the schema registry](intermediate/07-avro-and-the-registry) | A schema identifier on the front of every message, 17 bytes on the wire, and the two framings that must never be mixed. |
 | [08 — schema evolution](intermediate/08-schema-evolution) | Adding a field without deploying anyone in a particular order — and the default that is the whole reason it works. |
+| [09 — shared idempotency](intermediate/09-shared-idempotency) | Handling once across a fleet rather than once per process, and why the claim is a lease that expires rather than a lock that does not. |
+| [10 — graceful shutdown](intermediate/10-graceful-shutdown) | `close()` does not wait and `drain(timeout)` does — and the return value that tells you the grace period is too short. |
 
-More to come: 
-connections, topology as data, schema evolution, and a full application under
-`apps/`.
+More to come: the `advanced/` tier and a full application under `apps/`.
 
 ## Every example is tested
 

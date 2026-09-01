@@ -34,6 +34,8 @@
     <module>intermediate/06-topology-as-data</module>
     <module>intermediate/07-avro-and-the-registry</module>
     <module>intermediate/08-schema-evolution</module>
+    <module>intermediate/09-shared-idempotency</module>
+    <module>intermediate/10-graceful-shutdown</module>
   </modules>
 
   <properties>

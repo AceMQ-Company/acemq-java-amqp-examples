@@ -38,6 +38,8 @@
     <module>intermediate/10-graceful-shutdown</module>
     <module>advanced/01-backpressure-and-async</module>
     <module>advanced/02-encrypting-payloads</module>
+    <module>advanced/03-dead-letter-triage</module>
+    <module>advanced/04-portability-and-capabilities</module>
   </modules>
 
   <properties>

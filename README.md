@@ -65,6 +65,8 @@ Java 17 or later, and Docker.
 |---|---|
 | [01 — backpressure and async publishing](advanced/01-backpressure-and-async) | A thousand messages three ways: 547ms, 26ms, 17ms — all confirmed. And the window that stops pipelining becoming a memory leak. |
 | [02 — encrypting payloads](advanced/02-encrypting-payloads) | A custom `Codec` that makes the payload opaque to the broker, and why the content type must describe the wire format rather than what is under it. |
+| [03 — dead-letter triage](advanced/03-dead-letter-triage) | A dead-letter queue with more than one thing wrong in it: selective replay, why the filter is a drain and not a query, and what the parking lot is for. |
+| [04 — portability and capabilities](advanced/04-portability-and-capabilities) | The same code on two transports, branching on what each says it can do — 4 of 13 capabilities against 11 of 13. |
 
 More to come: the rest of the `advanced/` tier and a full application under
 `apps/`.

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>02-policy-administration</artifactId>
+    <version>0.1.0</version>
+  </parent>
+
+  <artifactId>policy-system-test</artifactId>
+  <name>policy: system test</name>
+
+  <!-- The only module that depends on every other, and it is a test. That is the
+       shape to keep: in the application itself nothing depends on more than
+       `contracts`, so no module can reach into another even by mistake. -->
+  <dependencies>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>policy-policies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>policy-underwriting</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>policy-documents</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>policy-billing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq.examples</groupId>
+      <artifactId>policy-claims</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq</groupId>
+      <artifactId>acemq-transport-rabbitmq</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+    </dependency>
+  </dependencies>
+</project>

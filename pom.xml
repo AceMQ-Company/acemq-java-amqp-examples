@@ -43,6 +43,7 @@
     <module>advanced/05-message-expiry</module>
     <module>advanced/06-multi-tenant-topology</module>
     <module>apps/01-order-fulfilment</module>
+    <module>apps/02-policy-administration</module>
   </modules>
 
   <properties>

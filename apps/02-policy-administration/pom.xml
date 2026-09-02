@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>acemq-java-amqp-examples</artifactId>
+    <version>0.1.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>02-policy-administration</artifactId>
+  <packaging>pom</packaging>
+  <name>apps/02 — policy administration (modular monolith)</name>
+
+  <!-- One deployable, several modules, and no module on any other module's classpath
+       except `contracts`. That absence is the architecture: a module cannot call
+       another even by accident, because the class is not there to import.
+
+       This is the opposite arrangement to apps/01 and the same discipline. There the
+       boundary is a network; here it is a Maven dependency graph, which is weaker
+       against a determined engineer and strong enough against a distracted one. -->
+  <modules>
+    <module>contracts</module>
+    <module>policies</module>
+    <module>underwriting</module>
+    <module>documents</module>
+    <module>billing</module>
+    <module>claims</module>
+    <module>system-test</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-contracts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-policies</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-underwriting</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-documents</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-billing</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>policy-claims</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

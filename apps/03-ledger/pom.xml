@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.acemq.examples</groupId>
+    <artifactId>acemq-java-amqp-examples</artifactId>
+    <version>0.1.0</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>03-ledger</artifactId>
+  <packaging>pom</packaging>
+  <name>apps/03 — event-sourced ledger</name>
+
+  <!-- The log is the system of record. Balances are not stored; they are what you
+       get by reading the log, and can be thrown away and rebuilt at any time. That
+       is the one architectural claim this application exists to demonstrate, and a
+       stream is the thing that makes it true rather than aspirational. -->
+  <modules>
+    <module>contracts</module>
+    <module>ledger</module>
+    <module>projections</module>
+    <module>transfers</module>
+    <module>system-test</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>ledger-contracts</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>ledger-ledger</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>ledger-projections</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.acemq.examples</groupId>
+        <artifactId>ledger-transfers</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

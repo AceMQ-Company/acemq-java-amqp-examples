@@ -75,8 +75,11 @@ Java 17 or later, and Docker.
 | | |
 |---|---|
 | [01 — order fulfilment](apps/01-order-fulfilment) | **Microservices.** Five services, one broker, no shared database: outbox at the edge, idempotent payments, a retry ladder over a flaky warehouse, and one correlation id that assembles the customer's timeline. |
+| [02 — policy administration](apps/02-policy-administration) | **Modular monolith.** Six modules in one JVM sharing one database, and still communicating only by events. An underwriting pipeline, a claim check for scanned documents, and one module that asks another a question over the broker rather than calling it. |
+| [03 — ledger](apps/03-ledger) | **Event sourcing.** The log is the system of record and balances are derived: a stream nobody empties, projections rebuilt from offset zero, and a second projection added later that still sees all of history. |
 
-More to come: a modular monolith, and an event-sourced ledger.
+Three architectures, one library. The same patterns appear in all three and are
+reached for differently — the point of having more than one.
 
 ## Every example is tested
 

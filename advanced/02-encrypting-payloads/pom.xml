@@ -21,6 +21,11 @@
     </dependency>
     <dependency>
       <groupId>org.acemq</groupId>
+      <artifactId>acemq-amqp-crypto</artifactId>
+      <version>${acemq.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.acemq</groupId>
       <artifactId>acemq-amqp-test</artifactId>
     </dependency>
   </dependencies>

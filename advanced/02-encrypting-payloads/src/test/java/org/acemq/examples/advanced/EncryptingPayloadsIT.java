@@ -21,7 +21,7 @@ class EncryptingPayloadsIT {
         // What the broker would hold in each case. The plaintext line is the point of
         // comparison: without it, "encrypted" is a claim rather than a demonstration.
         assertThat(output).contains("plain      {\"id\":\"p-1\",\"cardHolder\":\"A. Customer\"");
-        assertThat(output).contains("encrypted  <81 bytes of ciphertext>");
+        assertThat(output).contains("encrypted  <100 bytes of ciphertext>");
         assertThat(output).doesNotContain("encrypted  {");
 
         // And it still round trips through a real publish and consume.
@@ -36,7 +36,12 @@ class EncryptingPayloadsIT {
 
         // GCM authenticates as well as encrypts, so a wrong key and a tampered message
         // are the same answer: neither reaches the application.
-        assertThat(output).contains("wrong key  refused");
+        assertThat(output).contains("june message needs key payments-2026-06, and still reads: p-1");
+        assertThat(output).contains("new messages are written with payments-2026-09");
+        // The identifier a message needs is readable without holding any key, which is what an
+        // operator has in front of a dead-letter queue they can no longer read.
+        assertThat(output).contains("retired key refused: this message was encrypted with key"
+                + " 'payments-2026-06', which is not in the keyring.");
     }
 
     private static String runMain() throws Exception {

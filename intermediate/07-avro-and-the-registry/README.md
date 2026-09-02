@@ -50,10 +50,15 @@ writer's schema is whatever the reader happens to have compiled in, so the momen
 a producer adds a field every consumer still holding the old schema reads the new
 bytes wrongly. Sound only where producer and consumer are released together.
 
-The registry in this example is a `HashMap`. In production it is Confluent's,
-Apicurio, or a table in your own database — `SchemaRegistry` is two methods.
-**Note that only the in-memory implementation ships today**; persisting it is
-yours to provide.
+The registry in this example is a `HashMap`, so the example needs nothing but a
+JVM. **Do not run one in production.** The identifier travels in the message and
+the schema does not, so a registry that forgets on restart makes every message
+written before the restart unreadable — and the bytes still parse, just as the
+wrong schema.
+
+For a real one, `JdbcSchemaRegistry` in `acemq-amqp-patterns` keeps the mapping
+in a table, shared between replicas and surviving restarts. Confluent's and
+Apicurio work too — `SchemaRegistry` is two methods.
 
 ## Running it
 

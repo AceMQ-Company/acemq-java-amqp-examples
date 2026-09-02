@@ -1,0 +1,22 @@
+# Dependabot version updates for the examples.
+#
+# GitHub Actions only, deliberately. The Maven side is pinned to a released
+# AceMQ version on purpose: these examples exist to show what the published
+# library does, and a bot that bumped `acemq.version` would quietly change what
+# every example demonstrates and when. That bump belongs to a release, not to a
+# Monday morning.
+#
+# Third-party dependencies here are a handful of test libraries. Their security
+# updates still arrive, because those are a repository setting rather than
+# something this file controls.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns:
+          - "*"

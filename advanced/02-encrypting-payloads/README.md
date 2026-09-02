@@ -3,9 +3,10 @@
 TLS protects a message while it is moving. It does nothing about one sitting in a
 queue that an operator, a backup, or anyone with the management UI can read.
 
-The library's [security page](https://acemq-company.github.io/acemq-java-amqp/security.html)
-says there is no payload encryption and tells you to do it in your own code.
-**This is that code.**
+The library ships this: `acemq-amqp-crypto`. Earlier versions of this example
+hand-rolled the codec because there was none, and the list of things it said a
+real version would need — a key identifier per message, rotation without a flag
+day — is now the interesting part of the example rather than its caveat.
 
 ## What it demonstrates
 
@@ -44,11 +45,6 @@ The content type describes the wire format, not what is under the encryption.
 
 ## A fresh nonce per message
 
-```java
-byte[] nonce = new byte[12];
-random.nextBytes(nonce);
-```
-
 Reusing a nonce with GCM does not merely weaken the encryption, it **forfeits**
 it: two messages under the same key and nonce leak their difference outright. The
 nonce is prepended to the ciphertext, because the reader needs it and it is not a
@@ -56,26 +52,40 @@ secret.
 
 ## The exception says nothing about the payload
 
+The codec's failure messages name the payload's **type** and never its value. An
+error that helpfully prints what could not be encrypted writes the plaintext into
+the log, which is the one place it was never supposed to reach.
+
+## Rotation is the point
+
 ```java
-throw new AceMqException("could not encrypt a " + payload.getClass().getName(), e);
+Keyring keys = Keyring.builder()
+        .add("payments-2026-06", june)      // still on some queue somewhere
+        .current("payments-2026-09", now)   // everything written from here
+        .build();
 ```
 
-Not the payload itself. An error message that helpfully prints what could not be
-encrypted writes the plaintext into the log, which is the one place it was never
-supposed to reach.
+**The key identifier travels in the message, in the clear**, in front of the
+ciphertext. A consumer reads which key a message needs rather than assuming the
+current one, so a new key can be introduced while messages written with the old
+one are still queued.
 
-## This is an example, not a security product
+An AMQP header would have been tidier and would have lost it: headers are dropped
+by shovels, rewritten by federation, and absent from a message recovered out of a
+backup, and a ciphertext whose key nobody can name is gone.
 
-What is missing, and what makes it real work:
+## What still needs a decision from you
 
-- **The key comes from a `KeyGenerator` here.** It should come from a key
-  management service.
-- **No key identifier on the message**, so keys cannot be rotated without a flag
-  day. A real version puts a key id in a header and keeps the previous key
-  readable.
+- **The key comes from `Keys.generate()` here.** In production `Keyring` is a
+  small class in front of a key management service.
 - **No answer for the operators.** Once the queue is opaque, the people who used
-  to debug production by reading a message cannot. That is the actual cost of
-  this pattern and it needs a decision, not a library.
+  to debug production by reading a message cannot.
+  `EncryptedCodec.keyIdOf(body)` tells them which key a message needs without
+  holding any — usually the whole question, since an undecryptable queue is
+  normally a key retired too early. It is not a substitute for deciding how
+  support reads a message before you turn this on.
+- **Encryption is not authorisation.** Every service holding the keyring reads
+  every message under those keys. Separate audiences mean separate keys.
 
 Encrypt what genuinely needs it — card holders, health records, credentials — and
 leave the rest readable. A system where every queue is opaque is a system nobody
@@ -91,11 +101,13 @@ mvn compile exec:java      # no broker required
 
 ```
   plain      {"id":"p-1","cardHolder":"A. Customer","amount":42.0}
-  encrypted  <81 bytes of ciphertext>
+  encrypted  <100 bytes of ciphertext>
   round trip [A. Customer 42.0]
   offered to json codec: false
   offered to this codec: true
-  wrong key  refused
+  june message needs key payments-2026-06, and still reads: p-1
+  new messages are written with payments-2026-09
+  retired key refused: this message was encrypted with key 'payments-2026-06', which is not in the keyring.
 ```
 
 ## Related

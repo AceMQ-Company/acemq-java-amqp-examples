@@ -45,9 +45,10 @@ public final class AvroAndTheRegistry {
     public static void main(String[] args) throws Exception {
         InMemoryTransport.reset();
 
-        // A registry maps an integer to a schema. In production this is Confluent's, or
-        // Apicurio, or a table in your own database -- the interface is two methods, and
-        // this one is a HashMap. What matters is that both ends agree on the mapping.
+        // A registry maps an integer to a schema. This one is a HashMap, so the example
+        // needs nothing but a JVM -- in production use JdbcSchemaRegistry from
+        // acemq-amqp-patterns, or Confluent's, or Apicurio. What matters is that both ends
+        // agree on the mapping, and that it is still the same mapping after a restart.
         InMemorySchemaRegistry registry = new InMemorySchemaRegistry();
         SchemaDefinition definition = AvroCodec.definitionOf(ORDER);
         registry.register(1, definition);

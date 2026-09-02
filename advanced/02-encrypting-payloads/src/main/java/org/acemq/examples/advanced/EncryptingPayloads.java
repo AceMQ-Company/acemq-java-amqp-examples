@@ -1,11 +1,11 @@
 package org.acemq.examples.advanced;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.acemq.amqp.api.AceMqException;
@@ -14,6 +14,9 @@ import org.acemq.amqp.core.AceMq;
 import org.acemq.amqp.core.Codecs;
 import org.acemq.amqp.core.ConsumerOptions;
 import org.acemq.amqp.core.MessageConsumer;
+import org.acemq.amqp.crypto.EncryptedCodec;
+import org.acemq.amqp.crypto.Keyring;
+import org.acemq.amqp.crypto.Keys;
 import org.acemq.amqp.test.InMemoryTransport;
 import org.acemq.amqp.transport.QueueType;
 
@@ -21,9 +24,13 @@ import org.acemq.amqp.transport.QueueType;
  * Making the payload opaque to the broker.
  *
  * <p>TLS protects a message in flight. It does nothing about one sitting in a queue that an
- * operator, a backup or the management UI can read. The library's own security page says
- * so and tells you to encrypt in your own code — this is that code, and the seam it uses
- * is {@link Codec}, the last thing to touch the bytes going out and the first coming in.
+ * operator, a backup or the management UI can read. Where the payload must be opaque to the
+ * broker itself, it has to arrive already encrypted — and {@link Codec} is the seam, because
+ * it is the last thing to touch the bytes going out and the first coming in.
+ *
+ * <p>Earlier versions of this example hand-rolled the codec, because the library had none.
+ * It now ships one, and the parts that were listed here as "what a real version would need"
+ * are the parts worth showing: a key identifier per message, and rotation without a flag day.
  *
  * <p>No Docker needed: {@code mvn compile exec:java}.
  */
@@ -34,29 +41,27 @@ public final class EncryptingPayloads {
     public static void main(String[] args) throws Exception {
         InMemoryTransport.reset();
 
-        // In production this comes from a key management service, and each message carries
-        // an identifier saying which key encrypted it, so a key can be rotated without a
-        // flag day. Generated here because the example has to run.
-        KeyGenerator generator = KeyGenerator.getInstance("AES");
-        generator.init(256);
-        SecretKey key = generator.generateKey();
+        // In production these come from a key management service and Keyring is a small class
+        // in front of it. Generated here because the example has to run.
+        SecretKey june = Keys.generate();
+        SecretKey september = Keys.generate();
 
         try (AceMq mq = AceMq.connect("memory://payments")) {
             mq.declareExchange("payments", "topic");
             mq.declareQueue("payments.new", QueueType.CLASSIC, Map.of());
             mq.bind("payments.new", "payments", "payment.*");
 
-            // The delegate does the serialising; this codec only wraps it. Format and
-            // encryption stay independent choices.
+            // The delegate does the serialising; this only wraps it. Format and encryption
+            // stay independent choices.
             Codec json = Codecs.byName("json");
-            EncryptingCodec encrypting = new EncryptingCodec(json, key);
+            Codec encrypting = EncryptedCodec.wrapping(json, Keyring.of("payments-2026-06", june));
 
             Payment payment = new Payment("p-1", "A. Customer", 42.00);
 
-            // What the broker would hold, either way. The first is readable by anyone with
-            // the management UI; the second is not.
-            System.out.printf("  plain      %s%n", EncryptingCodec.preview(json.encode(payment)));
-            System.out.printf("  encrypted  %s%n", EncryptingCodec.preview(encrypting.encode(payment)));
+            // What the broker would hold, either way. The first is readable by anyone with the
+            // management UI; the second is not.
+            System.out.printf("  plain      %s%n", preview(json.encode(payment)));
+            System.out.printf("  encrypted  %s%n", preview(encrypting.encode(payment)));
 
             List<String> received = new CopyOnWriteArrayList<>();
             try (MessageConsumer consumer = mq.consume("payments.new", Payment.class,
@@ -72,26 +77,53 @@ public final class EncryptingPayloads {
                 System.out.printf("  round trip %s%n", received);
             }
 
-            // The content type says both what it is and that it is wrapped, so a consumer
-            // without the key does not silently receive something it cannot use -- it is
-            // never offered the message at all.
+            // The content type describes the wire format, not what is under the encryption. A
+            // "+json" suffix would make the JSON codec volunteer to parse ciphertext, so the
+            // failure would surface in a parser rather than in a codec that knows it cannot help.
             System.out.printf("  offered to json codec: %s%n",
-                    json.canDecode(EncryptingCodec.CONTENT_TYPE));
+                    json.canDecode(EncryptedCodec.CONTENT_TYPE));
             System.out.printf("  offered to this codec: %s%n",
-                    encrypting.canDecode(EncryptingCodec.CONTENT_TYPE));
+                    encrypting.canDecode(EncryptedCodec.CONTENT_TYPE));
 
-            // A different key is the same answer as a tampered message, because GCM
-            // authenticates as well as encrypts. Neither reaches the application.
-            KeyGenerator other = KeyGenerator.getInstance("AES");
-            other.init(256);
+            // Rotation. September's service writes with September's key and still holds June's
+            // for what is queued. This is why the key identifier is in the message: a consumer
+            // reads which key it needs rather than assuming the current one.
+            byte[] writtenInJune = encrypting.encode(payment);
+            Codec rotated = EncryptedCodec.wrapping(json, Keyring.builder()
+                    .add("payments-2026-06", june)
+                    .current("payments-2026-09", september)
+                    .build());
+
+            System.out.printf("  june message needs key %s, and still reads: %s%n",
+                    EncryptedCodec.keyIdOf(writtenInJune),
+                    rotated.decode(writtenInJune, Payment.class).id());
+            System.out.printf("  new messages are written with %s%n",
+                    EncryptedCodec.keyIdOf(rotated.encode(payment)));
+
+            // A retired key is named, along with what is held instead, because the usual cause
+            // of an undecryptable queue is a key retired while messages were still in it.
+            Codec withoutJune = EncryptedCodec.wrapping(
+                    json, Keyring.of("payments-2026-09", september));
             try {
-                new EncryptingCodec(json, other.generateKey())
-                        .decode(encrypting.encode(payment), Payment.class);
-                System.out.println("  wrong key  unexpectedly decrypted");
+                withoutJune.decode(writtenInJune, Payment.class);
+                System.out.println("  retired key unexpectedly decrypted");
             } catch (AceMqException e) {
-                System.out.printf("  wrong key  refused%n");
+                System.out.printf("  retired key refused: %s%n", firstSentence(e.getMessage()));
             }
         }
+    }
+
+    /** Only for showing what the broker would hold. */
+    private static String preview(byte[] body) {
+        String text = new String(body, StandardCharsets.UTF_8);
+        return text.codePoints().anyMatch(c -> c < 0x20 || c > 0x7e)
+                ? "<" + body.length + " bytes of ciphertext>"
+                : text;
+    }
+
+    private static String firstSentence(String message) {
+        int stop = message.indexOf(". ");
+        return stop < 0 ? message : message.substring(0, stop + 1);
     }
 
     private static void waitFor(java.util.function.BooleanSupplier done, Duration limit) throws Exception {

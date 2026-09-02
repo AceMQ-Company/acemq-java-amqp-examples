@@ -31,7 +31,7 @@ class PortabilityIT {
         // demonstration rather than an assertion.
         assertThat(output).contains("=== memory://orders ===");
         assertThat(output).contains("supports   4 of 13 capabilities");
-        assertThat(output).contains("supports   11 of 13 capabilities");
+        assertThat(output).contains("supports   10 of 13 capabilities");
 
         // The same declare call took two different paths, decided by what the transport
         // reported rather than by which transport it is.
@@ -45,7 +45,11 @@ class PortabilityIT {
 
         // Neither transport claims everything. A capability list that was always full
         // would mean nothing.
-        assertThat(output).contains("missing    [CONSISTENT_HASH_ROUTING, DELAYED_DELIVERY]");
+        // TRANSACTIONS is in this list on purpose. The broker has transactions; the
+        // library exposes no way to use them, and a capability describes what the
+        // library can do. It was claimed until 0.2.6, which made supports(...) true
+        // with nothing to call -- exactly the check this example teaches.
+        assertThat(output).contains("missing    [CONSISTENT_HASH_ROUTING, DELAYED_DELIVERY, TRANSACTIONS]");
     }
 
     private static String runMain(String url) throws Exception {

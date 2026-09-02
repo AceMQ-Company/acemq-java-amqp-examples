@@ -21,8 +21,8 @@ The same code, two transports, in one run:
   streams    refused, and says which transport and why
 
   === amqp://localhost ===
-  supports   11 of 13 capabilities
-  missing    [CONSISTENT_HASH_ROUTING, DELAYED_DELIVERY]
+  supports   10 of 13 capabilities
+  missing    [CONSISTENT_HASH_ROUTING, DELAYED_DELIVERY, TRANSACTIONS]
   queue      quorum, replicated
   streams    available
 ```
@@ -61,6 +61,20 @@ the independent consumer positions that were the reason for asking.
 
 That failure lands at declare time, on a laptop, rather than at three in the
 morning.
+
+## A capability describes the library, not the broker
+
+`TRANSACTIONS` is in RabbitMQ's *missing* list, and RabbitMQ has transactions.
+That is deliberate: this library offers no way to reach `tx.select`, so claiming
+the capability would mean `supports(TRANSACTIONS)` returning true with nothing to
+call.
+
+It was claimed until `0.2.6`, along with `PRIORITY` and
+`SINGLE_ACTIVE_CONSUMER`, none of which had any API. Writing *this example* is
+what made it obvious — it tells readers to branch on `supports(...)`, and for
+three capabilities there was nothing to branch to. `PRIORITY` gained
+`PublishOptions.withPriority(int)`; `SINGLE_ACTIVE_CONSUMER` was already
+reachable as a queue argument; `TRANSACTIONS` stopped being claimed.
 
 ## Why the in-memory transport claims so little
 

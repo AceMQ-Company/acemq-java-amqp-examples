@@ -1,5 +1,9 @@
 # AceMQ for Java — examples
 
+[![ci](https://github.com/AceMQ-Company/acemq-java-amqp-examples/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/AceMQ-Company/acemq-java-amqp-examples/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-Apache--2.0-green)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Java](https://img.shields.io/badge/Java-11%2B-orange)](#requirements)
+
 Runnable examples for [AceMQ for Java](https://github.com/AceMQ-Company/acemq-java-amqp).
 Each one is a self-contained Maven module: open a directory and the whole example
 is in front of you, with no shared helpers to trace.

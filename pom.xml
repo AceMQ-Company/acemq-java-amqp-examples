@@ -36,12 +36,16 @@
     <module>intermediate/08-schema-evolution</module>
     <module>intermediate/09-shared-idempotency</module>
     <module>intermediate/10-graceful-shutdown</module>
+    <module>intermediate/11-request-and-reply</module>
+    <module>intermediate/12-saga</module>
+    <module>intermediate/13-scheduling</module>
     <module>advanced/01-backpressure-and-async</module>
     <module>advanced/02-encrypting-payloads</module>
     <module>advanced/03-dead-letter-triage</module>
     <module>advanced/04-portability-and-capabilities</module>
     <module>advanced/05-message-expiry</module>
     <module>advanced/06-multi-tenant-topology</module>
+    <module>advanced/07-claim-check</module>
     <module>apps/01-order-fulfilment</module>
     <module>apps/02-policy-administration</module>
     <module>apps/03-ledger</module>
@@ -54,7 +58,7 @@
     <!-- The released version, never a snapshot. These examples are what a
          newcomer runs first, so they resolve exactly what the documentation
          tells them to depend on. -->
-    <acemq.version>0.2.10</acemq.version>
+    <acemq.version>0.5.0</acemq.version>
 
     <slf4j.version>2.0.16</slf4j.version>
     <junit.version>5.11.4</junit.version>

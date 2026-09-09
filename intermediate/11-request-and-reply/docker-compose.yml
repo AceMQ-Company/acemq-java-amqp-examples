@@ -1,0 +1,15 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Watch http://localhost:15672 (guest/guest) while it runs: a queue named
+# acemq.reply.<uuid> appears for as long as the requester is open and is gone
+# afterwards. It is declared with x-expires, so a process killed mid-request
+# does not leave it behind forever.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

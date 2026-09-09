@@ -39,7 +39,7 @@ class AvroAndTheRegistryIT {
         // and choosing a codec by content type. Before 0.2.4 the first returned an empty
         // id and a total of 5.4e-67 without throwing, and the second returned true.
         assertThat(output).contains("mismatch   refused:");
-        assertThat(output).contains("would silently produce the wrong values");
+        assertThat(output).contains("a codec with a fixed schema will not guess");
         assertThat(output).contains("canDecode  fixed codec on registered messages=false");
     }
 

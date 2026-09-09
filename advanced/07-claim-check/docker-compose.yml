@@ -1,0 +1,14 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Watch http://localhost:15672 (guest/guest) while it runs and look at the
+# message bodies on documents.raw: one is 64 kilobytes of document, the next is
+# a key. That difference is the whole pattern.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

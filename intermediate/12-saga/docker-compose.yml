@@ -1,0 +1,14 @@
+# A broker for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# Watch http://localhost:15672 (guest/guest) while it runs: saga.ledger is the
+# broker's own record of the three runs, and the compensating events are in it
+# alongside the ones they undo. Nothing is erased — a refund is a new fact.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

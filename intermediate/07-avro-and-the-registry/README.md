@@ -74,7 +74,7 @@ mvn compile exec:java      # no broker required
   received   [o-1=42.0]
   on the wire 17 bytes, id=1, content-type=application/vnd.acemq.avro
   framings   registered=application/vnd.acemq.avro fixed=avro/binary
-  mismatch   refused: these bytes carry a schema identifier and this codec has a fixed schema, so reading them would silently produce the wrong values
+  mismatch   refused: these bytes look like they carry a schema identifier and nothing said what they are, so a codec with a fixed schema will not guess
   canDecode  fixed codec on registered messages=false
 ```
 

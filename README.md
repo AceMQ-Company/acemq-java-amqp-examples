@@ -63,6 +63,9 @@ Java 17 or later, and Docker.
 | [08 — schema evolution](intermediate/08-schema-evolution) | Adding a field without deploying anyone in a particular order — and the default that is the whole reason it works. |
 | [09 — shared idempotency](intermediate/09-shared-idempotency) | Handling once across a fleet rather than once per process, and why the claim is a lease that expires rather than a lock that does not. |
 | [10 — graceful shutdown](intermediate/10-graceful-shutdown) | `close()` does not wait and `drain(timeout)` does — and the return value that tells you the grace period is too short. |
+| [11 — request and reply](intermediate/11-request-and-reply) | Three questions in flight on one reply queue, matched by correlation id rather than by arrival. The reply address written twice so a caller in another language can be answered, and the timeout that does not mean the work did not happen. |
+| [12 — saga](intermediate/12-saga) | Three services and no shared transaction: compensations that run backwards, and a compensation that itself fails and leaves a row for a person to look at. |
+| [13 — delivering a message later](intermediate/13-scheduling) | A ladder of queues instead of a per-message time to live, and the accuracy that buys stated rather than hidden — a three-second delay lands at about two. |
 
 ### advanced
 
@@ -74,6 +77,7 @@ Java 17 or later, and Docker.
 | [04 — portability and capabilities](advanced/04-portability-and-capabilities) | The same code on two transports, branching on what each says it can do — 4 of 13 capabilities against 11 of 13. |
 | [05 — message expiry](advanced/05-message-expiry) | A time to live on the message, where expired ones go — and the fact that they leave at the head of the queue, not on a timer. |
 | [06 — multi-tenant topology](advanced/06-multi-tenant-topology) | A queue per customer: blast radius, and why the tenant belongs in the name rather than the payload. |
+| [07 — claim check](advanced/07-claim-check) | Two documents one byte apart, either side of the threshold: 65538 bytes on the wire against 39. Three bytes of framing that let one consumer read both, and what happens when the store forgets. |
 
 ### apps
 

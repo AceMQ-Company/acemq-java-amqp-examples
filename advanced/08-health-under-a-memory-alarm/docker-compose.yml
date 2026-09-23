@@ -1,0 +1,25 @@
+# A broker for this example, and only for this example.
+#
+#   docker compose up -d
+#   mvn compile exec:java
+#
+# An alarm belongs to the node rather than to the connection that provoked it:
+# every publisher on this broker is refused for as long as it lasts. So do not
+# point this one at a broker anything else is using -- the failures land on the
+# other thing, saying "publishing is paused", which reads like a defect in
+# whatever reported it.
+#
+# Named, because the example reaches the node through
+# `docker exec acemq-alarm-broker rabbitmqctl`: an alarm is set on the node and
+# there is no AMQP for it.
+#
+# Watch http://localhost:15672 (guest/guest) while it runs. The connection goes
+# amber under "blocked" and the node carries a memory alarm, and both clear
+# again when the example puts the watermark back.
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: acemq-alarm-broker
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -17,9 +17,12 @@ import org.acemq.amqp.transport.QueueType;
  * publishers simply stop being served. A service that publishes once a minute discovers
  * this a minute later; one that is idle does not discover it at all.
  *
- * <p>Reproducing a real alarm means filling a disk, so this runs against the in-memory
- * transport, which can be told to block on demand. The behaviour it models is the real
- * one.
+ * <p>This runs against the in-memory transport, which can be told to block on demand, so that
+ * it needs nothing installed. The behaviour it models is the real one, and
+ * {@code advanced/08-health-under-a-memory-alarm} shows the same alarm on a real broker —
+ * raised with {@code rabbitmqctl set_vm_memory_high_watermark 0}, no disk filling required —
+ * to ask the one question this example cannot: what a health endpoint reports while the
+ * broker has stopped reading.
  *
  * <p>No Docker needed: {@code mvn compile exec:java}.
  */

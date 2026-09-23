@@ -63,8 +63,8 @@ Stop publishing, keep consuming, alert on the reason.
 
 ## Why no container
 
-Reproducing a real alarm means filling a disk. The in-memory transport can be
-told to block on demand:
+So that this one runs anywhere, with nothing installed. The in-memory transport
+can be told to block on demand:
 
 ```java
 InMemoryTransport.block("orders", "low on disk");
@@ -73,6 +73,19 @@ InMemoryTransport.unblock("orders");
 
 The host part of the `memory://` URL names the broker, which is what `block`
 takes.
+
+That is a stand-in, and it is worth saying plainly what it is standing in for. A
+real alarm does not need a disk filled:
+
+```bash
+rabbitmqctl set_vm_memory_high_watermark 0
+```
+
+puts a node into exactly the state this models, and
+[advanced/08](../../advanced/08-health-under-a-memory-alarm) does that against a
+real broker to ask a question this example cannot: what the **health endpoint**
+says while the broker has stopped reading. The publisher behaviour below is the
+same either way, and it is the part your code has to handle.
 
 ## Running it
 
@@ -95,5 +108,7 @@ mvn compile exec:java      # no broker required
 
 ## Related
 
+- [advanced/08](../../advanced/08-health-under-a-memory-alarm) — the same alarm
+  on a real broker, and what a readiness probe is told while it lasts
 - [Reliability](https://acemq-company.github.io/acemq-java-amqp/reliability.html)
 - [Testing](https://acemq-company.github.io/acemq-java-amqp/testing.html)

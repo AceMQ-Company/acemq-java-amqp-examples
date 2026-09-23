@@ -57,7 +57,7 @@ Java 17 or later, and Docker.
 | [02 — interceptors](intermediate/02-interceptors) | Cross-cutting concerns registered once on the connection: a tenant header no call site mentions, and the failure hook that replaces try/catch in every handler. |
 | [03 — telemetry and tracing](intermediate/03-telemetry) | One trace across two broker hops, with a 70-line tracer you can read. Four operations, one trace id, exactly one root. |
 | [04 — testing without a broker](intermediate/04-testing-without-a-broker) | `memory://` and a unit test that runs in 0.29s. What the in-memory transport refuses to fake, and why that is the point. |
-| [05 — blocked connections](intermediate/05-blocked-connections) | The broker runs out of disk and stops accepting publishes. What the exception tells you, why an idle connection never finds out, and the 30-second default that decides whether an alarm degrades a service or stops it. |
+| [05 — blocked connections](intermediate/05-blocked-connections) | The broker runs out of disk and stops accepting publishes. What the exception tells you, why an idle connection never finds out, and the 30-second default that decides whether an alarm degrades a service or stops it. Its counterpart is [advanced/08](advanced/08-health-under-a-memory-alarm), which raises a real alarm and asks what health says. |
 | [06 — topology as data](intermediate/06-topology-as-data) | Exchanges, queues and bindings as one readable value, planned before applied — and why a second plan is never empty. |
 | [07 — Avro and the schema registry](intermediate/07-avro-and-the-registry) | A schema identifier on the front of every message, 17 bytes on the wire, and the two framings that must never be mixed. |
 | [08 — schema evolution](intermediate/08-schema-evolution) | Adding a field without deploying anyone in a particular order — and the default that is the whole reason it works. |
@@ -78,6 +78,7 @@ Java 17 or later, and Docker.
 | [05 — message expiry](advanced/05-message-expiry) | A time to live on the message, where expired ones go — and the fact that they leave at the head of the queue, not on a timer. |
 | [06 — multi-tenant topology](advanced/06-multi-tenant-topology) | A queue per customer: blast radius, and why the tenant belongs in the name rather than the payload. |
 | [07 — claim check](advanced/07-claim-check) | Two documents one byte apart, either side of the threshold: 65538 bytes on the wire against 39. Three bytes of framing that let one consumer read both, and what happens when the store forgets. |
+| [08 — health under a memory alarm](advanced/08-health-under-a-memory-alarm) | A broker in a real alarm: `/acemq-health` answers `200 UP` with the reason in 19 microseconds, while an ordinary queue lookup on the same connection is still waiting five seconds later. |
 
 ### apps
 

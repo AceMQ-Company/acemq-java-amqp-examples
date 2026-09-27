@@ -34,6 +34,28 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+      - name: Every example directory is a module
+        # `mvn verify` runs the modules the pom lists, so an example removed from the
+        # pom is an example CI stops running -- silently, and with a green tick. The
+        # other four repositories in this family guard against that with a floor on the
+        # number of examples found on disk; this repository had nothing at all.
+        #
+        # Comparing the two counts is the right check here rather than a fixed floor:
+        # it catches the actual accident, which is a directory that exists and is no
+        # longer built, and it needs no editing when an example is added.
+        run: |
+          modules=$(grep -c "<module>" pom.xml)
+          dirs=$(find basic intermediate advanced apps -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ')
+          echo "$modules modules in pom.xml, $dirs example directories"
+          if [ "$modules" -ne "$dirs" ]; then
+            echo "::error::pom.xml lists $modules modules but there are $dirs example directories. An example that is not a module is not run."
+            find basic intermediate advanced apps -maxdepth 1 -mindepth 1 -type d | sort > /tmp/dirs.txt
+            grep -o "<module>[^<]*</module>" pom.xml | sed 's|</\?module>||g' | sort > /tmp/mods.txt
+            echo "only on disk:"; comm -23 /tmp/dirs.txt /tmp/mods.txt
+            echo "only in pom:";  comm -13 /tmp/dirs.txt /tmp/mods.txt
+            exit 1
+          fi
+
       - name: Build and run every example
         run: mvn -B --no-transfer-progress verify
       - name: Upload reports

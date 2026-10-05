@@ -30,7 +30,7 @@ another.
 |---|---|---|
 | **gateway** | Transactional outbox | The edge is where the dual-write problem lives: save the order *and* announce it, or a crash loses one of them |
 | **payments** | Shared idempotency store | The only service where handling a message twice is real money. Claims before charging, confirms after publishing |
-| **inventory** | Retry ladder + fatal failures | Tells "the warehouse timed out" (retry) from "there are three left and they want ten" (never retry) |
+| **inventory** | Retry ladder | Tells "the warehouse timed out" (throw, retry) from "there are three left and they want ten" (publish `stock.unavailable` and acknowledge: an outcome, not a failure, so nothing is retried or dead-lettered) |
 | **shipping** | Nothing clever | The point: it reacts to one event, does one thing, publishes one event. Adding a service beside it changes nothing |
 | **notifications** | Topic wildcard | Bound to `fulfilment.#`. Added without touching a single publisher, and the next one will be too |
 

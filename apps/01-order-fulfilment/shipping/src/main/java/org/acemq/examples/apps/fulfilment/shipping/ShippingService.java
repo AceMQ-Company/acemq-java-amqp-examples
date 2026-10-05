@@ -31,9 +31,9 @@ public final class ShippingService implements AutoCloseable {
         this.mq = AceMq.connect(amqpUrl, telemetry);
         mq.topology().apply(Fulfilment.topology(), ApplyMode.CREATE_ONLY);
 
-        // Four consumers: dispatch is the slow step, and this is the service that gets
-        // scaled first when the queue starts growing. Nothing else has to change for
-        // that to happen.
+        // One consumer, prefetch 10. Dispatch is the slow step, so this is the service that
+        // gets scaled first when the queue starts growing -- by running more instances, or
+        // by raising concurrency. Nothing else has to change for that to happen.
         this.consumer = mq.consume(Fulfilment.SHIPPING, Fulfilment.StockReserved.class,
                 ConsumerOptions.prefetch(10),
                 message -> dispatch(message.payload(), message.envelope()));

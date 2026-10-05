@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.acemq.amqp.api.AceFatalException;
 import org.acemq.amqp.api.ApplyMode;
 import org.acemq.amqp.api.Envelope;
 import org.acemq.amqp.api.RetryPolicy;
@@ -26,9 +25,11 @@ import org.acemq.examples.apps.fulfilment.contracts.Fulfilment;
  *   <li>there are three left and the order wants ten — retrying changes nothing.
  * </ul>
  *
- * <p>The first is a plain exception and goes up the retry ladder. The second is an
- * {@link AceFatalException}, which says "do not retry this" and sends it straight to the
- * dead-letter queue where a person can see it.
+ * <p>The first is a plain exception and goes up the retry ladder. The second is not an
+ * exception at all: it is an outcome, so the service publishes {@code StockUnavailable} and
+ * acknowledges the message, and notifications tells the customer. Nothing goes to the
+ * dead-letter queue, because nothing is broken. (A message that genuinely cannot be
+ * processed would throw {@code AceFatalException} to skip the ladder and dead-letter it.)
  */
 public final class InventoryService implements AutoCloseable {
 
@@ -46,9 +47,10 @@ public final class InventoryService implements AutoCloseable {
         this.mq = AceMq.connect(amqpUrl, telemetry);
         mq.topology().apply(Fulfilment.topology(), ApplyMode.CREATE_ONLY);
 
-        // The ladder waits inside the broker rather than on this thread: a failed
-        // message sits in a delay queue and comes back, instead of occupying a consumer
-        // that could be handling the orders behind it.
+        // Every rung (0.2s to 5s) is under RetryPolicy.DEFAULT_BROKER_WAIT_THRESHOLD (30s),
+        // so the ladder waits in this consumer, holding a prefetch slot, rather than in a
+        // broker delay queue. Short waits are cheaper here than another queue; a rung over
+        // the threshold would wait in the broker instead.
         ConsumerOptions options = ConsumerOptions.prefetch(20)
                 .withRetry(RetryPolicy.exponential(4, Duration.ofMillis(200), Duration.ofSeconds(5)));
 

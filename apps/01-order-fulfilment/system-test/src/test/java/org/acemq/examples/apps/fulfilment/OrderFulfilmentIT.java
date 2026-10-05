@@ -116,6 +116,22 @@ class OrderFulfilmentIT {
 
     @Test
     @Timeout(180)
+    void aFailedPublishAfterTheClaimDoesNotLoseTheOrder() throws Exception {
+        payments.withFlakyPublisher(1);
+
+        String orderId = gateway.placeOrder("barbara", "WIDGET", 1, 10.00);
+
+        // The retry arrives well inside the claim timeout. If the failed attempt kept its
+        // claim, the retry would be refused as a duplicate and nothing would ever ship.
+        waitFor(() -> shipping.shipped() == 1);
+
+        assertThat(payments.captured()).isEqualTo(1);
+        assertThat(payments.duplicatesRefused()).isZero();
+        assertThat(notifications.timelineOf(orderId)).containsOnlyOnce("PaymentCaptured");
+    }
+
+    @Test
+    @Timeout(180)
     void anOrderOverTheLimitStopsAtPayments() throws Exception {
         String orderId = gateway.placeOrder("charles", "WIDGET", 1, 5_000.00);
 

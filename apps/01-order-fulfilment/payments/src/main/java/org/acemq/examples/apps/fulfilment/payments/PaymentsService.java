@@ -39,6 +39,10 @@ public final class PaymentsService implements AutoCloseable {
     private final AtomicInteger captures = new AtomicInteger();
     private final AtomicInteger declines = new AtomicInteger();
     private final AtomicInteger duplicatesRefused = new AtomicInteger();
+    private final AtomicInteger publishAttempts = new AtomicInteger();
+
+    /** How many publishes fail before the broker starts accepting them. Set by the tests. */
+    private volatile int publishFailuresToSimulate;
 
     public PaymentsService(String amqpUrl, DataSource database, Telemetry telemetry) {
         this.mq = AceMq.connect(amqpUrl, telemetry);
@@ -69,6 +73,24 @@ public final class PaymentsService implements AutoCloseable {
             return;
         }
 
+        // Anything that fails between the claim and the confirm has to give the claim back.
+        // Otherwise the retry, arriving well inside the two-minute claim timeout, finds an
+        // unconfirmed claim, takes it for a duplicate and acknowledges it -- and the order
+        // stops here with nobody told.
+        try {
+            chargeClaimed(order, envelope);
+        } catch (RuntimeException e) {
+            charged.release(order.orderId());
+            throw e;
+        }
+    }
+
+    private void chargeClaimed(Fulfilment.OrderPlaced order, Envelope envelope) {
+        // The broker refusing a publish, the way a real one does under a connection blip.
+        if (publishAttempts.incrementAndGet() <= publishFailuresToSimulate) {
+            throw new IllegalStateException("publish failed");
+        }
+
         if (order.total() > AUTOMATIC_LIMIT) {
             mq.publisher(Fulfilment.EXCHANGE, Fulfilment.PAYMENT_DECLINED, Fulfilment.PaymentDeclined.class)
                     .send(new Fulfilment.PaymentDeclined(order.orderId(), order.customer(),
@@ -91,6 +113,12 @@ public final class PaymentsService implements AutoCloseable {
         // crash in between leaves the order marked as charged with nothing downstream
         // ever told -- an order that took the money and stopped.
         charged.confirm(order.orderId());
+    }
+
+    /** Makes the next {@code count} outcome publishes fail. */
+    public PaymentsService withFlakyPublisher(int count) {
+        this.publishFailuresToSimulate = count;
+        return this;
     }
 
     public int captured() {

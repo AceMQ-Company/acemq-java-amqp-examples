@@ -111,3 +111,33 @@ Each example carries a `README.md` saying what it is, what it demonstrates, how
 to run it and what to expect. Add a diagram only where the shape of something is
 the hard part — routing, or a trust chain. A diagram of two boxes and an arrow
 costs more to maintain than it explains.
+
+## Versions
+
+This repository has no releases of its own. It tracks [acemq-java-amqp](https://github.com/AceMQ-Company/acemq-java-amqp),
+moving the pin in `pom.xml` in a commit of its own whenever the library
+releases. A tag records that the examples were verified against one library
+release:
+
+| Tag | On |
+|---|---|
+| `examples-v<library version>`, e.g. `examples-v0.7.15` | the commit whose `pom.xml` pins that release, once CI has passed on it |
+| `examples-v<library version>-r<n>`, e.g. `examples-v0.7.15-r2` | a later commit worth picking up at the same release, such as a fix to an example or its README; the highest `n` wins |
+
+The `examples-` prefix keeps these apart from the library's own `vX.Y.Z`
+releases, which they would otherwise look like and are not.
+
+Tags are annotated and permanent: one is never moved, re-pointed or deleted,
+because [acemq-tutorials](https://github.com/AceMQ-Company/acemq-tutorials)
+builds its images from them. A tag on the wrong commit is corrected by the next
+revision, not by moving it.
+
+To tag, from an up-to-date `main` whose CI is green:
+
+```bash
+git tag -a examples-v0.7.15 -m "Examples verified against acemq-java-amqp 0.7.15"
+git push origin examples-v0.7.15
+```
+
+The tutorials pick up a library release only once its examples tag exists, so
+tagging is the last step of moving the pin.

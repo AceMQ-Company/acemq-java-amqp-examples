@@ -58,7 +58,7 @@ publishing; it is a memory leak with good throughput until it isn't.
 
 Pair it with [intermediate/05](../../intermediate/05-blocked-connections):
 `maxOutstandingPublishes` bounds the queue in your process, `blockedTimeout`
-bounds how long a single publish waits when the broker stops accepting.
+bounds how long a single publish waits when the broker stops accepting (zero by default: refused at once).
 
 ## Running it
 

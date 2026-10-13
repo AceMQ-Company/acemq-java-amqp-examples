@@ -60,9 +60,11 @@ public final class HealthUnderAMemoryAlarm {
     /**
      * How long a publish waits for the alarm to clear before giving up.
      *
-     * <p>Two seconds so the refusal below is quick to watch. The default is thirty, and
-     * whatever you choose you should choose: it decides how long a request thread sits in a
-     * publish while the broker is in alarm. See {@code intermediate/05-blocked-connections}.
+     * <p>Two seconds, set on purpose, so the refusal below holds the thread long enough to be
+     * measured. The default since 0.7.15 is zero -- refused at once, without writing anything
+     * -- and was thirty seconds before it. Whatever you set decides how long a request thread
+     * sits in a publish while the broker is in alarm. See
+     * {@code intermediate/05-blocked-connections}.
      */
     private static final Duration BLOCKED_TIMEOUT = Duration.ofSeconds(2);
 

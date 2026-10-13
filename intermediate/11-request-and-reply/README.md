@@ -99,13 +99,19 @@ person rather than for a retry loop.
 `unmatched()` is the other half: replies that arrived with nobody waiting for
 them. Under a slow responder it is the number that says the timeout is too short.
 
+A responder whose handler **throws** is not a timeout. Since 0.7.15 it replies
+with the failure in the `acemq-error` header and the requester throws
+`ResponderFailedException` at once, so a timeout here means only that nobody
+answered — the queue in this example is consumed by nobody.
+
 ## The reply queue
 
 `acemq.reply.<uuid>`, not durable, declared with `x-expires`. A reply queue
 holds answers nobody will read once the asking process is gone, so outliving it
 is pure cost — and a service that restarts often would otherwise leave thousands
 of them behind, which is a real way to run a broker out of memory with nothing
-obviously wrong.
+obviously wrong. For the same reason it declares no `.dlq` or `.parked` queue
+beside it.
 
 One requester per connection. One per call would create and destroy a queue for
 every question asked.

@@ -29,11 +29,11 @@ class BlockedConnectionsIT {
         // an idempotency key. Rejected before it left, so this one is safe to resend.
         assertThat(output).contains("during     mayHaveBeenPublished=false");
 
-        // The publish held the caller's thread for the configured blockedTimeout and
-        // no longer. The default is 30s; the example sets 2s and this asserts it was
-        // honoured, because that number is what decides whether an alarm degrades a
-        // service or stops it.
-        assertThat(output).contains("during     the publish waited about 2 s");
+        // With the default blockedTimeout of zero the publish is refused at once and
+        // holds the caller's thread for no time at all, because that number is what
+        // decides whether an alarm degrades a service or stops it. (Before 0.7.15 the
+        // default was a 30s wait.)
+        assertThat(output).contains("during     the publish waited about 0 s");
 
         // Messages published before the alarm are untouched, and the queue is readable
         // throughout -- an alarm stops publishers so consumers can drain.

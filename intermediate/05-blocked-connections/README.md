@@ -20,22 +20,29 @@ broken. Nothing is closed. Publishes just do not complete.
 
 ## How long a blocked publish waits
 
-`blockedTimeout` decides it. **The default is thirty seconds**, which is a
-sensible bet that a brief alarm will pass — and is also thirty seconds of a
-request thread doing nothing, per message, for as long as the alarm lasts.
+`blockedTimeout` decides it. **The default is zero: the publish is refused at
+once**, without writing anything, and counted as `refused`. No request thread is
+parked on an alarm, and the caller gets a fast failure it can shed load on.
+
+A wait is opt-in. Until 0.7.15 the default was thirty seconds, and this keeps it:
 
 ```java
 AceMq.connect(ConnectionConfig.url("amqps://broker:5671")
-        .blockedTimeout(Duration.ofSeconds(2))
+        .blockedTimeout(Duration.ofSeconds(30))
         .build());
 ```
 
-Choose it deliberately. "The whole thread pool is parked on publish" is how one
-broker low on disk takes an application down with it. A short timeout turns that
-into a fast failure you can shed load on; a long one turns it into an outage.
+That is a bet that a brief alarm will pass — and it is also thirty seconds of a
+request thread doing nothing, per message, for as long as the alarm lasts. "The
+whole thread pool is parked on publish" is how one broker low on disk takes an
+application down with it, so choose a wait deliberately, if at all.
 
-The example sets two seconds, and prints how long the call actually held the
-thread.
+One publish is different: the first one into an alarm, written before the block
+was known, cannot be refused up front. It fails within `confirmTimeout` with
+`mayHaveBeenPublished()` `true` (counted `failed`).
+
+The example keeps the default, and prints how long the call actually held the
+thread: none.
 
 ## The part that catches people
 
@@ -100,7 +107,7 @@ mvn compile exec:java      # no broker required
   alarm      raised, isBlocked=true reason=low on disk
   during     refused: reason=low on disk
   during     mayHaveBeenPublished=false
-  during     the publish waited about 2 s
+  during     the publish waited about 0 s
   meanwhile  the queue still holds 1, consumers unaffected
   after      cleared, published again, blocked=false
   queue      holds 2

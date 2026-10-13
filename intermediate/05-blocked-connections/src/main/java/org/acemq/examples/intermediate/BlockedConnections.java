@@ -34,15 +34,15 @@ public final class BlockedConnections {
         InMemoryTransport.reset();
 
         // blockedTimeout is how long a publish waits for the alarm to clear before
-        // giving up. The default is thirty seconds, which is a reasonable bet that a
-        // brief alarm will pass -- and is also thirty seconds of a request thread doing
-        // nothing, per message, for as long as the alarm lasts. Whatever you choose,
-        // choose it: the default decides how your service behaves under an alarm, and
-        // "the whole pool is parked on publish" is how one broker running low on disk
-        // takes an application down with it.
-        try (AceMq mq = AceMq.connect(ConnectionConfig.url("memory://orders")
-                .blockedTimeout(Duration.ofSeconds(2))
-                .build())) {
+        // giving up. The default is zero: a publish into a blocked broker is refused at
+        // once, without writing anything, so a request thread is never parked on an
+        // alarm and the caller can shed load straight away. A wait is opt-in --
+        // .blockedTimeout(Duration.ofSeconds(30)) keeps the thirty seconds that was the
+        // default before 0.7.15 -- and it is thirty seconds of a request thread doing
+        // nothing, per message, for as long as the alarm lasts. "The whole pool is
+        // parked on publish" is how one broker running low on disk takes an
+        // application down with it.
+        try (AceMq mq = AceMq.connect(ConnectionConfig.url("memory://orders").build())) {
             mq.declareExchange("orders", "topic");
             mq.declareQueue("orders.new", QueueType.CLASSIC, Map.of());
             mq.bind("orders.new", "orders", "order.*");
@@ -75,7 +75,8 @@ public final class BlockedConnections {
                 // idempotency key.
                 System.out.printf("  during     mayHaveBeenPublished=%s%n", e.mayHaveBeenPublished());
                 // How long the call held the caller's thread. This is the number that
-                // decides whether an alarm degrades the service or stops it.
+                // decides whether an alarm degrades the service or stops it, and with
+                // the default it is none at all.
                 System.out.printf("  during     the publish waited about %d s%n",
                         Duration.ofNanos(System.nanoTime() - waitedFrom).toSeconds());
             }

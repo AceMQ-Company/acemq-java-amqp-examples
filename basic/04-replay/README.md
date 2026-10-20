@@ -10,9 +10,12 @@ getting it back once the cause is fixed.
   decision, and that is the number the decision needs.
 - **A bounded trial first.** `replay.replay(1)` moves one. In production you do
   this before you believe the fix, then `replayAll()` when you do.
-- **Provenance survives.** The replayed message carries `replayedFrom()`,
-  `replayCount()` and the original `error()`, and its `attempt()` is reset so it
-  gets the whole retry ladder again rather than arriving exhausted.
+- **Provenance survives.** The replayed message carries `replayedFrom()` and
+  `replayCount()`, and its `attempt()` is reset so it gets the whole retry ladder
+  again rather than arriving exhausted. Since 0.7.17 the replay also clears
+  `error()` (`x-acemq-error`), because a message on attempt one has not failed
+  yet; read the reason on the dead-letter queue before replaying if you need it.
+  `keepingAttempts()` keeps both.
 
 ## What replay does not do
 
@@ -41,7 +44,7 @@ mvn compile exec:java
   replayed       1 as a trial, 1 handled
   replayed       2 more, 3 handled in total
   provenance     replayedFrom=orders.new.dlq replayCount=1 attempt=1
-  why it failed  the inventory service is down
+  error now      -
   dlq now        0
 ```
 

@@ -76,7 +76,10 @@ public final class Replay {
                 Envelope first = handled.get(0);
                 System.out.printf("  provenance     replayedFrom=%s replayCount=%d attempt=%d%n",
                         first.replayedFrom().orElse("-"), first.replayCount(), first.attempt());
-                System.out.printf("  why it failed  %s%n", first.error().orElse("-"));
+                // Cleared by the replay, with the attempt: a message on attempt one has
+                // not failed yet. Read the reason on the dead-letter queue, before
+                // replaying, if it is wanted.
+                System.out.printf("  error now      %s%n", first.error().orElse("-"));
                 System.out.printf("  dlq now        %d%n", mq.messageCount("orders.new.dlq"));
             }
         }

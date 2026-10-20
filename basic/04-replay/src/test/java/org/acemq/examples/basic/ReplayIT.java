@@ -41,8 +41,9 @@ class ReplayIT {
         assertThat(output).contains("replayCount=1");
         assertThat(output).contains("attempt=1");
 
-        // The error that caused the dead-lettering survives the round trip.
-        assertThat(output).contains("the inventory service is down");
+        // Since 0.7.17 the replay clears x-acemq-error along with the attempt.
+        assertThat(output).contains("error now      -");
+        assertThat(output).doesNotContain("the inventory service is down");
 
         assertThat(output).contains("dlq now        0");
     }

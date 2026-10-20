@@ -58,14 +58,14 @@ public final class DeadLetterTriage {
                         handled.add(order.id());
                     })) {
 
-                // The gateway is down. Two orders fail for a reason that will be fixed.
+                // The gateway is down. Two orders fail for a reason that will be fixed,
+                // and two that are simply wrong are mixed in among them -- one of them at
+                // the head of the queue.
                 gatewayDown = true;
-                mq.publisher("orders", "order.placed", Order.class).send(new Order("o-1", "GBP"));
-                mq.publisher("orders", "order.placed", Order.class).send(new Order("o-2", "GBP"));
-
-                // And two that are simply wrong, mixed in among them.
                 mq.publisher("orders", "order.placed", Order.class).send(new Order("o-3", "XXX"));
+                mq.publisher("orders", "order.placed", Order.class).send(new Order("o-1", "GBP"));
                 mq.publisher("orders", "order.placed", Order.class).send(new Order("o-4", "XXX"));
+                mq.publisher("orders", "order.placed", Order.class).send(new Order("o-2", "GBP"));
 
                 waitFor(() -> mq.messageCount("orders.new.dlq") == 4, Duration.ofSeconds(30));
             }
@@ -81,14 +81,14 @@ public final class DeadLetterTriage {
             try (MessageConsumer consumer = mq.consume("orders.new", Order.class, options,
                     message -> handled.add(message.payload().id()))) {
 
-                // A filter, not a query. The drain reads from the head and STOPS at the
-                // first message the filter rejects -- AMQP cannot look past a message
-                // without taking it, and holding every rejected one would pull the whole
-                // queue into memory. So this moves the timeouts at the head and halts as
-                // soon as it meets an XXX.
+                // A filter, not a query. The drain reads the queue from the head and holds
+                // each message the filter rejects unacknowledged -- AMQP cannot look past a
+                // message without taking it -- then requeues all of them, in order, before
+                // it returns. So the XXX at the head does not stop it: both timeouts move,
+                // and both XXX orders are back on the queue when this line finishes.
                 int moved = replay.replay(10, delivery ->
                         !new String(delivery.body(), StandardCharsets.UTF_8).contains("XXX"));
-                System.out.printf("  replayed   %d, stopped at the first message that did not match%n", moved);
+                System.out.printf("  replayed   %d, passed over the ones that did not match%n", moved);
 
                 waitFor(() -> handled.size() == moved, Duration.ofSeconds(30));
                 System.out.printf("  handled    %s%n", handled);

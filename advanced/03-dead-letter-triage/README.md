@@ -19,7 +19,7 @@ through the ladder.
 
 ```
   dead       4 in orders.new.dlq
-  replayed   2, stopped at the first message that did not match
+  replayed   2, passed over the ones that did not match
   handled    [o-1, o-2]
   remaining  2 for a person to look at
   parked     1 that will never decode
@@ -29,24 +29,27 @@ through the ladder.
 
 This is the part worth understanding before you rely on it:
 
-> A message the filter rejects is **requeued, and the drain stops there.**
+> A message the filter rejects is **held, and requeued when the drain ends.**
 
-AMQP has no way to look past a message without taking it. Skipping one means
-holding it while reading the next, and a drain that held every rejected message
-would pull the queue's worth of unsettled deliveries into memory.
+AMQP has no way to look past a message without taking it. So the replay reads
+the queue from the head, moves what the filter accepts, and keeps each message it
+passes over unacknowledged until the queue is empty or `max` have moved. Then it
+requeues every held message, in the order they arrived, and waits until they are
+back before it returns: `pending()` straight afterwards is the true number.
 
-So the filter reads from the **head** and halts at the first message it does not
-want. Consequences to plan around:
+Consequences to plan around:
 
-- If the first message does not match, **nothing moves.** That is visible, which
-  is the point — the alternative is quietly reordering the queue.
-- Replaying "all the timeouts" from a queue that starts with a malformed order
-  moves nothing until that order is dealt with.
-- Run it repeatedly rather than expecting one pass to sort the queue.
+- A filter that rejects the first message still moves the later matches. In this
+  example an `XXX` order sits at the head; both timeouts behind it move anyway.
+- A filter that matches little holds up to the whole queue unacknowledged at
+  once. On a queue with forty thousand messages, bound it with `max` or replay
+  in stages.
+- An explicit requeue does not count towards a quorum queue's delivery limit, so
+  passing a message over does not push it closer to being dropped.
 
-In this example the two timeouts happen to be at the head, so both move and the
-drain stops on the first `XXX`. Had they been interleaved, it would have moved
-one and stopped.
+Before 0.7.16 the Java library stopped at the first rejected message instead, so
+this example moved nothing until the `XXX` at the head was dealt with. All five
+AceMQ libraries now behave the same way.
 
 ## `.dlq` and `.parked` are different problems
 

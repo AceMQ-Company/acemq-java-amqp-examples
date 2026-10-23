@@ -78,6 +78,15 @@ public final class Scheduling {
 
                 waitFor(arrived, 3, Duration.ofSeconds(60));
 
+                // The scheduler counts a delivery when the broker confirms it, and the broker
+                // can hand the message to the consumer above before that confirm gets back. So
+                // the third arrival can come a moment before the third count; nothing is lost,
+                // every message has already arrived, so give the count a moment to catch up.
+                long counted = System.nanoTime() + Duration.ofSeconds(5).toNanos();
+                while (scheduler.delivered() < 3 && System.nanoTime() < counted) {
+                    Thread.sleep(10);
+                }
+
                 System.out.printf("  scheduled %d, delivered %d, hops %d%n",
                         scheduler.scheduled(), scheduler.delivered(), scheduler.hops());
                 System.out.println();
